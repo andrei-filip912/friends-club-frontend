@@ -45,9 +45,7 @@ const PostInput = () => {
           </Grid>
         </Grid>
       </Grid>
-      <AddEditPostDialog
-      // open={open} setOpen={setOpen}
-      />
+      <AddEditPostDialog />
     </div>
   );
 };
