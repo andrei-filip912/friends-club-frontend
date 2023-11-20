@@ -1,0 +1,24 @@
+.createPostDropzoneDefault {
+  padding: 5%;
+  border-width: 3px;
+  border-color: #5094d0;
+  border-style: solid;
+  margin-top: 1.5%;
+  background-color: #bedbf3;
+  cursor: pointer;
+  text-align: center;
+  min-width: 400px;
+}
+
+.createPostDropzoneActivated {
+    padding: 5%;
+    border-width: 3px;
+    border-color: #5094d0;
+    border-style: solid;
+    margin-top: 1.5%;
+    background-color: #4dabf5;
+    cursor: pointer;
+    text-align: center;
+    min-width: 400px;
+  }
+  
