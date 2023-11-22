@@ -2,6 +2,7 @@ import { UpdatePostCaptionRequest } from "@/interfaces/update-post-caption-reque
 import { CreatePostRequest } from "../interfaces/create-post-request.interface";
 import { Post } from "../interfaces/post.interface";
 import axios from "axios";
+import { DeletePostRequest } from "@/interfaces/delete-post-request.interface";
 
 class PostService {
   private readonly baseUrl: string;
@@ -31,7 +32,7 @@ class PostService {
     }
   }
 
-  // // Update an existing post
+  // Update an existing post
   async updatePostCaption(postId: number, updateCaptionRequest: UpdatePostCaptionRequest) {
     try {
       const response = await axios.patch(`${this.baseUrl}/api/post/${postId}/caption`, updateCaptionRequest);
@@ -41,15 +42,16 @@ class PostService {
     }
   }
 
-  // // Delete a post by ID
-  // async deletePost(postId) {
-  //   try {
-  //     const response = await this.axios.delete(`/posts/${postId}`);
-  //     return response.data;
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
+  // Delete a post by ID
+  async deletePost(deletePostRequest: DeletePostRequest) {
+    try {
+      const postId = deletePostRequest.postId;
+      const response = await axios.delete(`${this.baseUrl}/api/post/${postId}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 const postService = new PostService();
