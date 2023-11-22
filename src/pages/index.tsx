@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
-import PostInput from "@/components/PostInput";
+import PostInput from "@/components/Post/PostInput";
 import PostList from "@/components/Post/PostList";
 
 const inter = Inter({ subsets: ["latin"] });

@@ -11,10 +11,11 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 interface CustomizedSnackbarProps {
+  text: string;
   snackBarOpen: boolean;
   setSnackbarOpen: (value: boolean) => void;
 }
-export default function CustomizedSnackbar({snackBarOpen, setSnackbarOpen}: CustomizedSnackbarProps) {
+export default function CustomizedSnackbar({text, snackBarOpen, setSnackbarOpen}: CustomizedSnackbarProps) {
  
   const handleClose = (
     event?: React.SyntheticEvent | Event,
@@ -34,7 +35,7 @@ export default function CustomizedSnackbar({snackBarOpen, setSnackbarOpen}: Cust
     //   </Button>
     <Snackbar open={snackBarOpen} autoHideDuration={6000} onClose={handleClose}>
       <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
-        Post created successfully!
+        {text}
       </Alert>
     </Snackbar>
     // </Stack>

@@ -1,3 +1,4 @@
+import { UpdatePostCaptionRequest } from "@/interfaces/update-post-caption-request.interface";
 import { CreatePostRequest } from "../interfaces/create-post-request.interface";
 import { Post } from "../interfaces/post.interface";
 import axios from "axios";
@@ -22,33 +23,19 @@ class PostService {
   // Create a new post
   async createPost(post: CreatePostRequest) {
     try {
-      const response = await axios.post(`${this.baseUrl}/api/post`, post, {
-        // headers: {
-        // 'Content-Type': 'multipart/form-data; boundary=something',
-        // "Access-Control-Allow-Origin": "*"
-        // }
-      });
+      const response = await axios.post(`${this.baseUrl}/api/post`, post);
       return response;
-      // const response = await fetch(`${this.baseUrl}/api/post`, {
-      //   method: "POST",
-      //   body: post,
-      // })
-      // const data = response.json();
-      // return data;
+
     } catch (error) {
       throw error;
     }
   }
 
   // // Update an existing post
-  async updatePostCaption(postId: number, updatedCaption: string) {
+  async updatePostCaption(postId: number, updateCaptionRequest: UpdatePostCaptionRequest) {
     try {
-      const response = await fetch(`${this.baseUrl}/api/posts/${postId}`, {
-        method: "PUT",
-        body: JSON.stringify({ caption: updatedCaption }),
-      });
-      const data = response.json();
-      return data;
+      const response = await axios.patch(`${this.baseUrl}/api/post/${postId}/caption`, updateCaptionRequest);
+      return response;
     } catch (error) {
       throw error;
     }
