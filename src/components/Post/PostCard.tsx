@@ -22,6 +22,8 @@ import AlertDialog from "../AlertDialog";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import { setIsDeleteOpen } from "@/redux/features/post-slice";
+import postService from "@/services/PostService";
+import CustomizedSnackbar from "../CustomizedSnackbar";
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
@@ -48,6 +50,9 @@ export default function PostCard({ post }: Props) {
   const [isDeleteOpen, setIsDeleteOpen] = React.useState(false);
   const [isEditOpen, setIsEditOpen] = React.useState(false);
 
+  const [snackBarOpen, setSnackbarOpen] = React.useState(false);
+  const [snackBarText, setSnackbarText] = React.useState("");
+
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
@@ -56,15 +61,24 @@ export default function PostCard({ post }: Props) {
     setAnchorEl(event.currentTarget);
   };
 
+  const handleDeletePost = async () => {
+    const deletePostRequest = {
+      postId: post.id
+    };
+    const res = await postService.deletePost(deletePostRequest);
+
+    if (res.status === 200) {
+      setIsDeleteOpen(false);
+      setSnackbarText("Post deleted successfully.");
+      setSnackbarOpen(true);
+    }
+  }
+
   const alertText = {
     title: "Delete the post ?",
     content:
       "Are you sure you want to delete the selected post? The post, including all its content will be deleted forever and cannot be recoverd.",
   };
-
-  const submitEdit = () => {};
-
-  const submitDelete = () => {};
 
   return (
     <>
@@ -152,7 +166,6 @@ export default function PostCard({ post }: Props) {
       </Collapse> */}
       </Card>
 
-      {/* EDIIIIIIIIIIIIIIIIIIIIIIIITTTTTTTT */}
       <AddEditPostDialogClient
         open={isEditOpen}
         setOpen={setIsEditOpen}
@@ -163,6 +176,12 @@ export default function PostCard({ post }: Props) {
         {...alertText}
         open={isDeleteOpen}
         setOpen={setIsDeleteOpen}
+        agree={handleDeletePost}
+      />
+      <CustomizedSnackbar
+        text={snackBarText}
+        snackBarOpen={snackBarOpen}
+        setSnackbarOpen={setSnackbarOpen}
       />
     </>
   );

@@ -15,8 +15,11 @@ interface CustomizedSnackbarProps {
   snackBarOpen: boolean;
   setSnackbarOpen: (value: boolean) => void;
 }
-export default function CustomizedSnackbar({text, snackBarOpen, setSnackbarOpen}: CustomizedSnackbarProps) {
- 
+export default function CustomizedSnackbar({
+  text,
+  snackBarOpen,
+  setSnackbarOpen,
+}: CustomizedSnackbarProps) {
   const handleClose = (
     event?: React.SyntheticEvent | Event,
     reason?: string
@@ -33,7 +36,7 @@ export default function CustomizedSnackbar({text, snackBarOpen, setSnackbarOpen}
     //   <Button variant="outlined" onClick={handleClick}>
     //     Open success snackbar
     //   </Button>
-    <Snackbar open={snackBarOpen} autoHideDuration={6000} onClose={handleClose}>
+    <Snackbar open={snackBarOpen} autoHideDuration={3000} onClose={handleClose}>
       <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
         {text}
       </Alert>

@@ -12,12 +12,16 @@ type Props = {
   setOpen: (value: boolean) => void;
   title: string;
   content: string;
-  // agree: (value: string) => void;
+  agree: () => void;
 };
 
-export default function AlertDialog({ open, setOpen, title, content }: Props) {
-  
-
+export default function AlertDialog({
+  open,
+  setOpen,
+  title,
+  content,
+  agree,
+}: Props) {
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -48,7 +52,13 @@ export default function AlertDialog({ open, setOpen, title, content }: Props) {
           <Button variant="contained" onClick={handleClose}>
             Disagree
           </Button>
-          <Button onClick={handleClose} autoFocus>
+          <Button
+            onClick={() => {
+              handleClose();
+              agree();
+            }}
+            autoFocus
+          >
             Agree
           </Button>
         </DialogActions>
