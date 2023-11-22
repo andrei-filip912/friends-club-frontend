@@ -1,4 +1,4 @@
-import { Button, Grid, TextField } from "@mui/material";
+import { Button, Grid, TextField, Typography } from "@mui/material";
 import react, { useEffect, useState, useRef } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -12,9 +12,6 @@ import styles from "@/styles/AddEditPostDialog.module.css";
 import { FileRejection } from "react-dropzone";
 import CustomizedSnackbar from "../CustomizedSnackbar";
 import { Post } from "../../interfaces/post.interface";
-import { setIsAddOpen } from "../../redux/features/post-slice";
-import { useDispatch } from "react-redux";
-import { AppDispatch, useAppSelector } from "../../redux/store";
 import postService from "../../services/PostService";
 
 interface FileWithPreview extends File {
@@ -22,26 +19,26 @@ interface FileWithPreview extends File {
 }
 
 type Props = {
+  open: boolean;
+  setOpen: (val: boolean) => void;
   post?: Post;
 };
 
-const AddEditPostDialog = ({ post }: Props) => {
-  const dispatch = useDispatch<AppDispatch>();
-  const open = useAppSelector((state) => state.postReducer.value.isAddOpen);
+const AddEditPostDialog = ({ open, setOpen, post }: Props) => {
   const isAdd = post ? false : true;
 
   const [snackBarOpen, setSnackbarOpen] = useState(false);
+  const [snackBarText, setSnackbarText] = useState("");
   // post assets
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [rejectedFiles, setRejectedFiles] = useState<FileRejection[]>([]);
   const [caption, setCaption] = useState<string>("");
 
   const handleDialogClose = () => {
-    // setOpen(false);
-    dispatch(setIsAddOpen(false));
+    setOpen(false);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmitAdd = async () => {
     const formData = new FormData();
     formData.append("image", files[0] as File);
     formData.append("caption", caption);
@@ -50,6 +47,20 @@ const AddEditPostDialog = ({ post }: Props) => {
     if (res.status === 201) {
       resetPostAssets();
       handleDialogClose();
+      setSnackbarText("Post added successfully!");
+      setSnackbarOpen(true);
+    }
+  };
+
+  const handleSubmitEdit = async () => {
+    const updatePostCaption = {
+      caption: caption
+    };
+    const res = await postService.updatePostCaption(post!.id, updatePostCaption);
+    if (res.status === 200) {
+      resetPostAssets();
+      handleDialogClose();
+      setSnackbarText("Post edited successfully!");
       setSnackbarOpen(true);
     }
   };
@@ -115,12 +126,19 @@ const AddEditPostDialog = ({ post }: Props) => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleSubmit} variant="contained" fullWidth>
-            {isAdd ? "Post" : "Save changes"}
-          </Button>
+          {isAdd ? (
+            <Button onClick={handleSubmitAdd} variant="contained" fullWidth>
+              <Typography>Post</Typography>
+            </Button>
+          ) : (
+            <Button onClick={handleSubmitEdit} variant="contained" fullWidth>
+              <Typography>Save changes</Typography>
+            </Button>
+          )}
         </DialogActions>
       </Dialog>
       <CustomizedSnackbar
+        text={snackBarText}
         snackBarOpen={snackBarOpen}
         setSnackbarOpen={setSnackbarOpen}
       />

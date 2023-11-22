@@ -7,7 +7,7 @@ import { AppDispatch } from "../../redux/store";
 import AddEditPostDialog from "./AddEditPostDialog";
 
 const PostInput = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const [isAddOpen, setAddOpen] = useState(false);
 
   return (
     <div>
@@ -26,7 +26,7 @@ const PostInput = () => {
         >
           <Grid item xs={10}>
             <TextField
-              onClick={() => dispatch(setIsAddOpen(true))}
+              onClick={() => setAddOpen(true)}
               fullWidth
               multiline
               placeholder={"What is on your mind..."}
@@ -36,7 +36,7 @@ const PostInput = () => {
           </Grid>
           <Grid item>
             <Button
-              onClick={() => dispatch(setIsAddOpen(true))}
+              onClick={() => setAddOpen(true)}
               variant="contained"
               sx={{ height: "54px" }}
             >
@@ -45,7 +45,7 @@ const PostInput = () => {
           </Grid>
         </Grid>
       </Grid>
-      <AddEditPostDialog />
+      <AddEditPostDialog open={isAddOpen} setOpen={setAddOpen} />
     </div>
   );
 };

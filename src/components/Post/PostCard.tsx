@@ -19,6 +19,9 @@ import { Post } from "../../interfaces/post.interface";
 import LongMenu from "../LongMenu";
 import AddEditPostDialogClient from "./AddEditPostDialog";
 import AlertDialog from "../AlertDialog";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/redux/store";
+import { setIsDeleteOpen } from "@/redux/features/post-slice";
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
@@ -39,10 +42,11 @@ type Props = {
 };
 
 export default function PostCard({ post }: Props) {
+  const dispatch = useDispatch<AppDispatch>();
   const [expanded, setExpanded] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [openEditDialog, setOpenEditDialog] = React.useState(false);
-  const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = React.useState(false);
+  const [isEditOpen, setIsEditOpen] = React.useState(false);
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -51,23 +55,16 @@ export default function PostCard({ post }: Props) {
   const handleOptionsClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
-  React.useEffect(() => {
-    console.log(openEditDialog);
-  }, [openEditDialog]);
 
   const alertText = {
     title: "Delete the post ?",
     content:
       "Are you sure you want to delete the selected post? The post, including all its content will be deleted forever and cannot be recoverd.",
-  }; 
-
-  const submitEdit = () => {
-    
   };
 
-  const submitDelete = () => {
-    
-  };
+  const submitEdit = () => {};
+
+  const submitDelete = () => {};
 
   return (
     <>
@@ -90,9 +87,9 @@ export default function PostCard({ post }: Props) {
           anchorEl={anchorEl}
           setAnchorEl={setAnchorEl}
           // openEditDialog={openEditDialog}
-          setOpenEditDialog={setOpenEditDialog}
+          setOpenEditDialog={() => setIsEditOpen(true)}
           // openDeleteDialog={openDeleteDialog}
-          setOpenDeleteDialog={setOpenDeleteDialog}
+          setOpenDeleteDialog={() => setIsDeleteOpen(true)}
         />
         {/* !!!!!!!!!!!! use next image */}
         <CardMedia
@@ -156,13 +153,17 @@ export default function PostCard({ post }: Props) {
       </Card>
 
       {/* EDIIIIIIIIIIIIIIIIIIIIIIIITTTTTTTT */}
-      {/* <AddEditPostDialogClient
-        open={openEditDialog}
-        setOpen={setOpenEditDialog}
+      <AddEditPostDialogClient
+        open={isEditOpen}
+        setOpen={setIsEditOpen}
         post={post}
-      /> */}
-      
-      <AlertDialog {...alertText} open={openDeleteDialog} setOpen={setOpenDeleteDialog}/>
+      />
+
+      <AlertDialog
+        {...alertText}
+        open={isDeleteOpen}
+        setOpen={setIsDeleteOpen}
+      />
     </>
   );
 }
