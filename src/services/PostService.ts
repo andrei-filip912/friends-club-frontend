@@ -5,7 +5,7 @@ import axios from "axios";
 class PostService {
   private readonly baseUrl: string;
   constructor() {
-    this.baseUrl = process.env.NEXT_PUBLIC_API_URL || "";
+    this.baseUrl = process.env.API_URL || "";
   }
 
   // Fetch a list of posts
