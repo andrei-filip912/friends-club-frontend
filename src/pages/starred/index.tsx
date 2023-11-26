@@ -15,7 +15,7 @@ export default function StarredPage() {
         }}
       >
         <Typography variant="body1" gutterBottom>
-          Starred Page
+          Unprotected: Starred Page
         </Typography>
       </Box>
     </Container>
