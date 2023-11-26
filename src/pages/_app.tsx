@@ -1,13 +1,13 @@
+import { ReduxProvider } from "@/redux/provider";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
-import { ReduxProvider } from "@/redux/provider";
 //icons
-import HomeIcon from "@mui/icons-material/Home";
-import StarIcon from "@mui/icons-material/Star";
 import ChecklistIcon from "@mui/icons-material/Checklist";
-import SettingsIcon from "@mui/icons-material/Settings";
-import LogoutIcon from "@mui/icons-material/Logout";
 import Diversity3Icon from "@mui/icons-material/Diversity3";
+import HomeIcon from "@mui/icons-material/Home";
+import LogoutIcon from "@mui/icons-material/Logout";
+import SettingsIcon from "@mui/icons-material/Settings";
+import StarIcon from "@mui/icons-material/Star";
 // auth
 import { UserProvider } from "@auth0/nextjs-auth0/client";
 
@@ -23,9 +23,10 @@ import {
   ListItemText,
   ThemeProvider,
   Toolbar,
-  Typography,
+  Typography
 } from "@mui/material";
 import Link from "next/link";
+import ToolbarProfie from "@/components/ToolbarProfie";
 
 export const metadata = {
   title: "Friends Club",
@@ -47,16 +48,28 @@ const PLACEHOLDER_LINKS = [
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <ThemeProvider theme={{}}>
-      <UserProvider>
+    <UserProvider>
+      <ThemeProvider theme={{}}>
         <AppBar position="fixed" sx={{ zIndex: 2000, background: "#4caf50" }}>
-          <Toolbar sx={{ backgroundColor: "background.paper" }}>
-            <Diversity3Icon
-              sx={{ color: "#444", mr: 2, transform: "translateY(-2px)" }}
-            />
-            <Typography variant="h6" noWrap component="div" color="black">
-              Friends Club
-            </Typography>
+          <Toolbar
+            sx={{
+              backgroundColor: "#4caf50",
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Diversity3Icon
+                sx={{ color: "white", mr: 2, transform: "translateY(-2px)" }}
+              />
+              <Typography variant="h6" noWrap component="div" color="white">
+                Friends Club
+              </Typography>
+            </Box>
+
+            <Box sx={{ flexGrow: 0 }}>
+            <ToolbarProfie />
+            </Box>
           </Toolbar>
         </AppBar>
         <Drawer
@@ -115,7 +128,7 @@ export default function App({ Component, pageProps }: AppProps) {
             <Component {...pageProps} />
           </ReduxProvider>
         </Box>
-      </UserProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </UserProvider>
   );
 }
