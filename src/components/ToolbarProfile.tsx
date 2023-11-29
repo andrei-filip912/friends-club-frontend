@@ -11,7 +11,7 @@ import { useUser } from "@auth0/nextjs-auth0/client";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Link from "next/link";
 
-function ToolbarProfie() {
+function ToolbarProfile() {
   const { user } = useUser();
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
@@ -45,9 +45,9 @@ function ToolbarProfie() {
       <Tooltip title="Open profile">
         <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
           {user ? (
-            <Avatar alt="User" src="/static/images/avatar/2.jpg" />
+            <Avatar alt="User" src={user.picture!} sx={{ color: "white" }} />
           ) : (
-            <AccountCircleIcon />
+            <AccountCircleIcon sx={{ color: "white" }} />
           )}
         </IconButton>
       </Tooltip>
@@ -97,4 +97,4 @@ function ToolbarProfie() {
   );
 }
 
-export default ToolbarProfie;
+export default ToolbarProfile;

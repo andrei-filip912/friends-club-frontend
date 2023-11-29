@@ -26,7 +26,7 @@ import {
   Typography
 } from "@mui/material";
 import Link from "next/link";
-import ToolbarProfie from "@/components/ToolbarProfie";
+import ToolbarProfile from "@/components/ToolbarProfile";
 
 export const metadata = {
   title: "Friends Club",
@@ -68,7 +68,7 @@ export default function App({ Component, pageProps }: AppProps) {
             </Box>
 
             <Box sx={{ flexGrow: 0 }}>
-            <ToolbarProfie />
+            <ToolbarProfile />
             </Box>
           </Toolbar>
         </AppBar>
