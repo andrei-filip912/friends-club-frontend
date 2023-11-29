@@ -35,26 +35,17 @@ export const Home: React.FC<HomeProps> = ({ posts }) => {
 export const getServerSideProps: GetServerSideProps<HomeProps> = async (
   ctx: GetServerSidePropsContext
 ) => {
-  try {
-    const { accessToken } = await getAccessToken(ctx.req, ctx.res);
-    const client = buildClient(ctx);
-    const response = await client.get("/api/post", {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
+  const { accessToken } = await getAccessToken(ctx.req, ctx.res);
+  const client = buildClient(ctx);
+  const { data: posts } = await client.get("/api/post", {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
 
-    return {
-      props: {
-        posts: response.data,
-      },
-    };
-  } catch (error) {
-    console.log(error);
-    return {
-      props: {
-        posts: [],
-      },
-    };
-  }
+  return {
+    props: {
+      posts: posts,
+    },
+  };
 };
 
 export default Home;
