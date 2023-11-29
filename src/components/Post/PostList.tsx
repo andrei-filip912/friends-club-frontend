@@ -4,16 +4,12 @@ import PostCard from "./PostCard";
 import postService from "../../services/PostService";
 import { Post } from "@/interfaces/post.interface";
 
-const PostList = () => {
-  const [posts, setPosts] = useState<Post[]>([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const posts = await postService.getPosts();
-      setPosts(posts);
-    };
-    fetchData();
-  }, []);
+interface PostListProps {
+  posts: Post[];
+}
+
+const PostList: React.FC<PostListProps> = ({ posts }) => {
 
   return (
     <Grid
@@ -24,13 +20,13 @@ const PostList = () => {
       rowSpacing={4}
     >
       {/* ...Posts... */}
-      {posts.map((post) => {
+      {/* {posts.map((post) => {
         return (
           <Grid item key={post.id} sx={{ width: "50%" }} xs={8}>
             <PostCard post={post} />
           </Grid>
         );
-      })}
+      })} */}
     </Grid>
   );
 };

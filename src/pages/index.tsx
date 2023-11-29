@@ -3,10 +3,19 @@ import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import PostInput from "@/components/Post/PostInput";
 import PostList from "@/components/Post/PostList";
+import { getAccessToken } from "@auth0/nextjs-auth0";
+import { GetServerSideProps, GetServerSidePropsContext } from "next";
+import axios from "axios";
+import { Post } from "@/interfaces/post.interface";
+import buildClient from "./api/build-client";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function Home() {
+interface HomeProps {
+  posts: Post[];
+}
+
+export const Home: React.FC<HomeProps> = ({ posts }) => {
   return (
     <>
       <Head>
@@ -16,9 +25,36 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-      <PostInput/>
-      <PostList />
+        <PostInput />
+        <PostList posts={posts} />
       </main>
     </>
   );
-}
+};
+
+export const getServerSideProps: GetServerSideProps<HomeProps> = async (
+  ctx: GetServerSidePropsContext
+) => {
+  try {
+    const { accessToken } = await getAccessToken(ctx.req, ctx.res);
+    const client = buildClient(ctx);
+    const response = await client.get("/api/post", {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    return {
+      props: {
+        posts: response.data,
+      },
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      props: {
+        posts: [],
+      },
+    };
+  }
+};
+
+export default Home;

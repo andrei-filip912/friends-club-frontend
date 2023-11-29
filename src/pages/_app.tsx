@@ -1,6 +1,6 @@
 import { ReduxProvider } from "@/redux/provider";
 import "@/styles/globals.css";
-import type { AppProps } from "next/app";
+import type { AppProps, AppContext } from "next/app";
 //icons
 import ChecklistIcon from "@mui/icons-material/Checklist";
 import Diversity3Icon from "@mui/icons-material/Diversity3";
@@ -23,7 +23,7 @@ import {
   ListItemText,
   ThemeProvider,
   Toolbar,
-  Typography
+  Typography,
 } from "@mui/material";
 import Link from "next/link";
 import ToolbarProfile from "@/components/ToolbarProfile";
@@ -68,7 +68,7 @@ export default function App({ Component, pageProps }: AppProps) {
             </Box>
 
             <Box sx={{ flexGrow: 0 }}>
-            <ToolbarProfile />
+              <ToolbarProfile />
             </Box>
           </Toolbar>
         </AppBar>
