@@ -38,7 +38,7 @@ const PostInput = () => {
             <Button
               onClick={() => setAddOpen(true)}
               variant="contained"
-              sx={{ height: "54px" }}
+              sx={{ height: "54px", backgroundColor: '#4caf50' }}
             >
               <AddPhotoAlternateIcon sx={{ fontSize: 28 }} />
             </Button>
