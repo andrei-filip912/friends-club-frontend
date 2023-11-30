@@ -1,12 +1,13 @@
+import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import { Button, Grid, TextField } from "@mui/material";
 import React, { useState } from "react";
-import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
-import { setIsAddOpen } from "../../redux/features/post-slice";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../redux/store";
 import AddEditPostDialog from "./AddEditPostDialog";
 
-const PostInput = () => {
+interface Props {
+  accessToken?: string;
+}
+
+const PostInput: React.FC<Props> = ({ accessToken }) => {
   const [isAddOpen, setAddOpen] = useState(false);
 
   return (
@@ -38,14 +39,18 @@ const PostInput = () => {
             <Button
               onClick={() => setAddOpen(true)}
               variant="contained"
-              sx={{ height: "54px", backgroundColor: '#4caf50' }}
+              sx={{ height: "54px", backgroundColor: "#4caf50" }}
             >
               <AddPhotoAlternateIcon sx={{ fontSize: 28 }} />
             </Button>
           </Grid>
         </Grid>
       </Grid>
-      <AddEditPostDialog open={isAddOpen} setOpen={setAddOpen} />
+      <AddEditPostDialog
+        open={isAddOpen}
+        setOpen={setAddOpen}
+        accessToken={accessToken}
+      />
     </div>
   );
 };

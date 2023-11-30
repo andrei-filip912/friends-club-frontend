@@ -24,6 +24,8 @@ import { AppDispatch } from "@/redux/store";
 import { setIsDeleteOpen } from "@/redux/features/post-slice";
 import postService from "@/services/PostService";
 import CustomizedSnackbar from "../CustomizedSnackbar";
+import buildClient from "@/pages/api/build-client";
+import PostService from "@/services/PostService";
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
@@ -41,9 +43,10 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
 }));
 type Props = {
   post: Post;
+  accessToken?: string;
 };
 
-export default function PostCard({ post }: Props) {
+export default function PostCard({ post, accessToken }: Props) {
   const dispatch = useDispatch<AppDispatch>();
   const [expanded, setExpanded] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -62,17 +65,22 @@ export default function PostCard({ post }: Props) {
   };
 
   const handleDeletePost = async () => {
+    // create resquest body
     const deletePostRequest = {
-      postId: post.id
+      postId: post.id,
     };
-    const res = await postService.deletePost(deletePostRequest);
+    // build client and service, then send request
+    const client = buildClient();
+    const postService = new PostService(client);
+    const res = await postService.deletePost(deletePostRequest, accessToken);
 
+    // display success message for status 200
     if (res.status === 200) {
       setIsDeleteOpen(false);
       setSnackbarText("Post deleted successfully.");
       setSnackbarOpen(true);
     }
-  }
+  };
 
   const alertText = {
     title: "Delete the post ?",
@@ -170,6 +178,7 @@ export default function PostCard({ post }: Props) {
         open={isEditOpen}
         setOpen={setIsEditOpen}
         post={post}
+        accessToken={accessToken}
       />
 
       <AlertDialog

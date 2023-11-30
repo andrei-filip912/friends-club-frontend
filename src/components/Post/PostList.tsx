@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Grid } from "@mui/material";
 import PostCard from "./PostCard";
-import postService from "../../services/PostService";
 import { Post } from "@/interfaces/post.interface";
-
 
 interface PostListProps {
   posts: Post[];
+  accessToken?: string;
 }
 
-const PostList: React.FC<PostListProps> = ({ posts }) => {
-
+const PostList: React.FC<PostListProps> = ({ posts, accessToken }) => {
   return (
     <Grid
       container
@@ -20,13 +18,13 @@ const PostList: React.FC<PostListProps> = ({ posts }) => {
       rowSpacing={4}
     >
       {/* ...Posts... */}
-      {/* {posts.map((post) => {
+      {posts.map((post) => {
         return (
           <Grid item key={post.id} sx={{ width: "50%" }} xs={8}>
-            <PostCard post={post} />
+            <PostCard post={post} accessToken={accessToken} />
           </Grid>
         );
-      })} */}
+      })}
     </Grid>
   );
 };
