@@ -6,14 +6,14 @@ const buildClient = (ctx?: GetServerSidePropsContext): AxiosInstance => {
     // request will be sent from server
     return axios.create({
       baseURL:
-        "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local",
+        process.env.API_SERVER_URL,
       headers: ctx.req.headers,
     });
   } else {
     // request will be sent from browser
     // no props provided bc browser handles everything
     return axios.create({
-      baseURL: "https://friends-club.dev",
+      baseURL: process.env.API_CLIENT_URL,
     });
   }
 };
