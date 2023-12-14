@@ -1,31 +1,32 @@
-import * as React from "react";
-import { styled } from "@mui/material/styles";
+import buildClient from "@/pages/api/build-client";
+import { AppDispatch } from "@/redux/store";
+import PostService from "@/services/PostService";
+import ReactionService from "@/services/ReactionService";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import ShareIcon from "@mui/icons-material/Share";
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import Avatar from "@mui/material/Avatar";
 import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
 import CardHeader from "@mui/material/CardHeader";
 import CardMedia from "@mui/material/CardMedia";
-import CardContent from "@mui/material/CardContent";
-import CardActions from "@mui/material/CardActions";
-import Collapse from "@mui/material/Collapse";
-import Avatar from "@mui/material/Avatar";
 import IconButton, { IconButtonProps } from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import { red } from "@mui/material/colors";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import ShareIcon from "@mui/icons-material/Share";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import Image from "next/image";
+import { styled } from "@mui/material/styles";
+import * as React from "react";
+import { useDispatch } from "react-redux";
 import { Post } from "../../interfaces/post.interface";
+import AlertDialog from "../AlertDialog";
+import CustomizedSnackbar from "../CustomizedSnackbar";
 import LongMenu from "../LongMenu";
 import AddEditPostDialogClient from "./AddEditPostDialog";
-import AlertDialog from "../AlertDialog";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/redux/store";
-import { setIsDeleteOpen } from "@/redux/features/post-slice";
-import postService from "@/services/PostService";
-import CustomizedSnackbar from "../CustomizedSnackbar";
-import buildClient from "@/pages/api/build-client";
-import PostService from "@/services/PostService";
+import { CreateReactionRequest } from "@/interfaces/reaction/create-reaction-request";
+import ThumbDownIcon from "@mui/icons-material/ThumbDown";
+import { useUser } from "@auth0/nextjs-auth0/client";
+import { useEffect } from "react";
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
@@ -47,12 +48,14 @@ type Props = {
 };
 
 export default function PostCard({ post, accessToken }: Props) {
+  const { user } = useUser();
   const dispatch = useDispatch<AppDispatch>();
   const [expanded, setExpanded] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [isDeleteOpen, setIsDeleteOpen] = React.useState(false);
   const [isEditOpen, setIsEditOpen] = React.useState(false);
-
+  const [isLike, setIsLike] = React.useState(false);
+  const [isDislike, setIsDislike] = React.useState(false);
   const [snackBarOpen, setSnackbarOpen] = React.useState(false);
   const [snackBarText, setSnackbarText] = React.useState("");
 
@@ -82,11 +85,57 @@ export default function PostCard({ post, accessToken }: Props) {
     }
   };
 
+  const handleLike = async () => {
+    const createReactionRequest: CreateReactionRequest = {
+      postId: post.id,
+      reactionType: "like",
+    };
+
+    // build client and service, then send request
+    const client = buildClient();
+    const reactionService = new ReactionService(client);
+    const res = await reactionService.createReaction(
+      createReactionRequest,
+      accessToken
+    );
+
+    console.log("like: ", res);
+    if (res.status === 201) {
+      setIsLike(true);
+      setIsDislike(false);
+    }
+  };
+
+  const handleDislike = async () => {
+    const createReactionRequest: CreateReactionRequest = {
+      postId: post.id,
+      reactionType: "dislike",
+    };
+
+    // build client and service, then send request
+    const client = buildClient();
+    const reactionService = new ReactionService(client);
+    const res = await reactionService.createReaction(
+      createReactionRequest,
+      accessToken
+    );
+
+    console.log("dislike: ", res);
+    if (res.status === 201) {
+      setIsLike(false);
+      setIsDislike(true);
+    }
+  };
+
   const alertText = {
     title: "Delete the post ?",
     content:
       "Are you sure you want to delete the selected post? The post, including all its content will be deleted forever and cannot be recoverd.",
   };
+
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
 
   return (
     <>
@@ -126,11 +175,11 @@ export default function PostCard({ post, accessToken }: Props) {
           </Typography>
         </CardContent>
         <CardActions disableSpacing>
-          <IconButton aria-label="add to favorites">
-            <FavoriteIcon />
+          <IconButton aria-label="like" onClick={handleLike}>
+            <ThumbUpIcon />
           </IconButton>
-          <IconButton aria-label="share">
-            <ShareIcon />
+          <IconButton aria-label="dislike" onClick={handleDislike}>
+            <ThumbDownIcon />
           </IconButton>
           <ExpandMore
             expand={expanded}
