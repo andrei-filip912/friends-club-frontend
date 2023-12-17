@@ -1,5 +1,7 @@
 import { CreateReactionRequest } from "@/interfaces/reaction/create-reaction-request";
+import { DeleteReactionRequest } from "@/interfaces/reaction/delete-reaction-request";
 import { GetReactionRequest } from "@/interfaces/reaction/get-reaction-request.interface";
+import { ReactionDto } from "@/interfaces/reaction/reaction.dto";
 import { Reaction } from "@/interfaces/reaction/reaction.interface";
 import { AxiosInstance } from "axios";
 
@@ -9,9 +11,12 @@ class ReactionService {
     this.client = client;
   }
 
-  async getReaction(getReactionRequest: GetReactionRequest, accessToken?: string): Promise<Reaction[]> {
+  async getReactions(
+    postId: number,
+    accessToken?: string
+  ): Promise<ReactionDto[]> {
     try {
-      const response = await this.client.get("/api/", {
+      const response = await this.client.get(`/api/reaction?postId=${postId}`, {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       const { data } = response;
@@ -21,10 +26,9 @@ class ReactionService {
     }
   }
 
-  async createReaction(reaction: CreateReactionRequest,  accessToken?: string){
+  async createReaction(reaction: CreateReactionRequest, accessToken?: string) {
     try {
-      const response = await this.client.post("/api/reaction", reaction,
-       {
+      const response = await this.client.post("/api/reaction", reaction, {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       return response;
@@ -33,10 +37,24 @@ class ReactionService {
     }
   }
 
-  async createOrUpdateReaction(reaction: CreateReactionRequest,  accessToken?: string){
+  async createOrUpdateReaction(
+    reaction: CreateReactionRequest,
+    accessToken?: string
+  ) {
     try {
-      const response = await this.client.put("/api/reaction", reaction,
-       {
+      const response = await this.client.put("/api/reaction", reaction, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async deleteReaction(reaction: DeleteReactionRequest, accessToken?: string) {
+    try {
+      const response = await this.client.delete('/api/reaction', {
+        data: reaction,
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       return response;
