@@ -32,6 +32,18 @@ class ReactionService {
       throw error;
     }
   }
+
+  async createOrUpdateReaction(reaction: CreateReactionRequest,  accessToken?: string){
+    try {
+      const response = await this.client.put("/api/reaction", reaction,
+       {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default ReactionService;

@@ -48,14 +48,12 @@ type Props = {
 };
 
 export default function PostCard({ post, accessToken }: Props) {
-  const { user } = useUser();
   const dispatch = useDispatch<AppDispatch>();
   const [expanded, setExpanded] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [isDeleteOpen, setIsDeleteOpen] = React.useState(false);
   const [isEditOpen, setIsEditOpen] = React.useState(false);
-  const [isLike, setIsLike] = React.useState(false);
-  const [isDislike, setIsDislike] = React.useState(false);
+  const [reaction, setReaction] = React.useState<string>("");
   const [snackBarOpen, setSnackbarOpen] = React.useState(false);
   const [snackBarText, setSnackbarText] = React.useState("");
 
@@ -85,45 +83,24 @@ export default function PostCard({ post, accessToken }: Props) {
     }
   };
 
-  const handleLike = async () => {
-    const createReactionRequest: CreateReactionRequest = {
-      postId: post.id,
-      reactionType: "like",
-    };
+  const handleReactionChange = async (newReaction: string) => {
+    if (newReaction === reaction) {
+      // send request to delte
+      console.log("delete reaction");
+      setReaction("");
+    } else {
+      console.log("set reaction: ", newReaction);
+      setReaction(newReaction);
 
-    // build client and service, then send request
-    const client = buildClient();
-    const reactionService = new ReactionService(client);
-    const res = await reactionService.createReaction(
-      createReactionRequest,
-      accessToken
-    );
+      const createReactionRequest: CreateReactionRequest = {
+        postId: post.id,
+        reactionType: newReaction,
+      };
 
-    console.log("like: ", res);
-    if (res.status === 201) {
-      setIsLike(true);
-      setIsDislike(false);
-    }
-  };
-
-  const handleDislike = async () => {
-    const createReactionRequest: CreateReactionRequest = {
-      postId: post.id,
-      reactionType: "dislike",
-    };
-
-    // build client and service, then send request
-    const client = buildClient();
-    const reactionService = new ReactionService(client);
-    const res = await reactionService.createReaction(
-      createReactionRequest,
-      accessToken
-    );
-
-    console.log("dislike: ", res);
-    if (res.status === 201) {
-      setIsLike(false);
-      setIsDislike(true);
+      // build client and service, then send request
+      const client = buildClient();
+      const reactionService = new ReactionService(client);
+      await reactionService.createOrUpdateReaction(createReactionRequest, accessToken);
     }
   };
 
@@ -132,10 +109,6 @@ export default function PostCard({ post, accessToken }: Props) {
     content:
       "Are you sure you want to delete the selected post? The post, including all its content will be deleted forever and cannot be recoverd.",
   };
-
-  useEffect(() => {
-    console.log(user);
-  }, [user]);
 
   return (
     <>
@@ -157,9 +130,7 @@ export default function PostCard({ post, accessToken }: Props) {
         <LongMenu
           anchorEl={anchorEl}
           setAnchorEl={setAnchorEl}
-          // openEditDialog={openEditDialog}
           setOpenEditDialog={() => setIsEditOpen(true)}
-          // openDeleteDialog={openDeleteDialog}
           setOpenDeleteDialog={() => setIsDeleteOpen(true)}
         />
         {/* !!!!!!!!!!!! use next image */}
@@ -175,11 +146,11 @@ export default function PostCard({ post, accessToken }: Props) {
           </Typography>
         </CardContent>
         <CardActions disableSpacing>
-          <IconButton aria-label="like" onClick={handleLike}>
-            <ThumbUpIcon />
+          <IconButton aria-label="like" onClick={() => handleReactionChange('like')}>
+            <ThumbUpIcon color={reaction === 'like' ? 'primary' : 'inherit'} />
           </IconButton>
-          <IconButton aria-label="dislike" onClick={handleDislike}>
-            <ThumbDownIcon />
+          <IconButton aria-label="dislike" onClick={() => handleReactionChange('dislike')}>
+            <ThumbDownIcon color={reaction === 'dislike'  ? 'primary' : 'inherit'} />
           </IconButton>
           <ExpandMore
             expand={expanded}
