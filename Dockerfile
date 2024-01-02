@@ -1,4 +1,4 @@
-FROM node:18-alpine AS deps
+FROM node:21-alpine AS deps
 RUN npm install -g pnpm
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
@@ -6,7 +6,7 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
 RUN  pnpm install --prod
 
-FROM node:18-alpine AS builder
+FROM node:21-alpine AS builder
 RUN npm install -g pnpm
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
@@ -16,7 +16,7 @@ ENV NEXT_TELEMETRY_DISABLED 1
 
 RUN pnpm run build
 
-FROM node:18-alpine AS runner
+FROM node:21-alpine AS runner
 RUN npm install -g pnpm
 WORKDIR /app
 
