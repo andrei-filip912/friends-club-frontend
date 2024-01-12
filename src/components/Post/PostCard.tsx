@@ -1,31 +1,32 @@
-import * as React from "react";
-import { styled } from "@mui/material/styles";
+import { CreateReactionRequest } from "@/interfaces/reaction/create-reaction-request";
+import { ReactionDto } from "@/interfaces/reaction/reaction.dto";
+import buildClient from "@/pages/api/build-client";
+import { AppDispatch } from "@/redux/store";
+import PostService from "@/services/PostService";
+import ReactionService from "@/services/ReactionService";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import ThumbDownIcon from "@mui/icons-material/ThumbDown";
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import Avatar from "@mui/material/Avatar";
 import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
 import CardHeader from "@mui/material/CardHeader";
 import CardMedia from "@mui/material/CardMedia";
-import CardContent from "@mui/material/CardContent";
-import CardActions from "@mui/material/CardActions";
-import Collapse from "@mui/material/Collapse";
-import Avatar from "@mui/material/Avatar";
 import IconButton, { IconButtonProps } from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import { red } from "@mui/material/colors";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import ShareIcon from "@mui/icons-material/Share";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import Image from "next/image";
+import { styled } from "@mui/material/styles";
+import * as React from "react";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { Post } from "../../interfaces/post.interface";
+import AlertDialog from "../AlertDialog";
+import CustomizedSnackbar from "../CustomizedSnackbar";
 import LongMenu from "../LongMenu";
 import AddEditPostDialogClient from "./AddEditPostDialog";
-import AlertDialog from "../AlertDialog";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/redux/store";
-import { setIsDeleteOpen } from "@/redux/features/post-slice";
-import postService from "@/services/PostService";
-import CustomizedSnackbar from "../CustomizedSnackbar";
-import buildClient from "@/pages/api/build-client";
-import PostService from "@/services/PostService";
+import { useUser } from "@auth0/nextjs-auth0/client";
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
@@ -48,13 +49,15 @@ type Props = {
 
 export default function PostCard({ post, accessToken }: Props) {
   const dispatch = useDispatch<AppDispatch>();
+  const { user } = useUser();
   const [expanded, setExpanded] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [isDeleteOpen, setIsDeleteOpen] = React.useState(false);
   const [isEditOpen, setIsEditOpen] = React.useState(false);
-
+  const [reaction, setReaction] = React.useState<string>("");
   const [snackBarOpen, setSnackbarOpen] = React.useState(false);
   const [snackBarText, setSnackbarText] = React.useState("");
+  const [reactions, setReactions] = React.useState<ReactionDto[]>([]);
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -82,6 +85,61 @@ export default function PostCard({ post, accessToken }: Props) {
     }
   };
 
+  const handleReactionChange = async (newReaction: string) => {
+    // build client and service, then send request
+    const client = buildClient();
+    const reactionService = new ReactionService(client);
+
+    if (newReaction === reaction) {
+      // send request to delte
+      setReaction("");
+
+      const deleteReactionRequest = {
+        postId: post.id,
+      };
+      await reactionService.deleteReaction(deleteReactionRequest, accessToken);
+    } else {
+      setReaction(newReaction);
+
+      const createReactionRequest: CreateReactionRequest = {
+        postId: post.id,
+        reactionType: newReaction,
+      };
+
+      await reactionService.createOrUpdateReaction(
+        createReactionRequest,
+        accessToken
+      );
+    }
+  };
+
+  useEffect(() => {
+    const fetchReactions = async () => {
+      // build client and service, then send request
+      const client = buildClient();
+      const reactionService = new ReactionService(client);
+      
+      const res = await reactionService.getReactions(post.id, accessToken);
+      setReactions(res);
+    };
+
+    if (post.id && accessToken) {
+      fetchReactions();
+    }
+  }, [post.id, accessToken]);
+
+  // when user obj and reactions array are available, 
+  // display a reaction for the current user, if there is one
+  useEffect(() => {
+    if (user && reactions.length > 0) {
+      reactions.forEach((reaction) => {
+        if (reaction.userId === user.sub) {
+          setReaction(reaction.reactionType);
+        }
+      });
+    }
+  }, [user, reactions]);
+
   const alertText = {
     title: "Delete the post ?",
     content:
@@ -108,9 +166,7 @@ export default function PostCard({ post, accessToken }: Props) {
         <LongMenu
           anchorEl={anchorEl}
           setAnchorEl={setAnchorEl}
-          // openEditDialog={openEditDialog}
           setOpenEditDialog={() => setIsEditOpen(true)}
-          // openDeleteDialog={openDeleteDialog}
           setOpenDeleteDialog={() => setIsDeleteOpen(true)}
         />
         {/* !!!!!!!!!!!! use next image */}
@@ -125,12 +181,25 @@ export default function PostCard({ post, accessToken }: Props) {
             {post.caption}
           </Typography>
         </CardContent>
+        <CardContent>
+          <Typography color="text.secondary">
+            Reactions: {reactions.length}
+          </Typography>
+        </CardContent>
         <CardActions disableSpacing>
-          <IconButton aria-label="add to favorites">
-            <FavoriteIcon />
+          <IconButton
+            aria-label="like"
+            onClick={() => handleReactionChange("like")}
+          >
+            <ThumbUpIcon color={reaction === "like" ? "primary" : "inherit"} />
           </IconButton>
-          <IconButton aria-label="share">
-            <ShareIcon />
+          <IconButton
+            aria-label="dislike"
+            onClick={() => handleReactionChange("dislike")}
+          >
+            <ThumbDownIcon
+              color={reaction === "dislike" ? "primary" : "inherit"}
+            />
           </IconButton>
           <ExpandMore
             expand={expanded}
