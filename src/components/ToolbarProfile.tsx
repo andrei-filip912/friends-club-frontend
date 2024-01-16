@@ -18,7 +18,7 @@ function ToolbarProfile() {
   const loggedUserOptions = [
     {
       text: "Profile",
-      href: "",
+      href: "/profile",
     },
     {
       text: "Logout",
